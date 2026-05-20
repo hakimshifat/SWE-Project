@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-layout">
+  <div class="panel auth-panel">
+    <h1>Register</h1>
+    <form method="post" action="/register" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label>
+        Username
+        <input name="username" minlength="3" autocomplete="username" required>
+      </label>
+      <label>
+        Email
+        <input name="email" type="email" autocomplete="email" required>
+      </label>
+      <label>
+        Password
+        <input name="password" type="password" minlength="8" autocomplete="new-password" required>
+      </label>
+      <label>
+        Confirm password
+        <input name="confirm_password" type="password" minlength="8" autocomplete="new-password" required>
+      </label>
+      <button type="submit">Create Account</button>
+    </form>
+    <p class="muted">Already registered? <a href="/login">Login</a>.</p>
+  </div>
+</section>
+{% endblock %}
+

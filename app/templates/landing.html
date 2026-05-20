@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="landing-hero">
+  <div class="landing-copy">
+    <p class="eyebrow">Secure steganography workspace</p>
+    <h1>Hide confidential data inside clean image files.</h1>
+    <p class="hero-lede">
+      A focused web app for embedding text or files into PNG/BMP cover images, protecting payloads
+      with optional passwords, and monitoring every operation from an admin view.
+    </p>
+    <div class="hero-actions">
+      <a class="button" href="/register">Create Account</a>
+      <a class="button secondary" href="/login">Login</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <strong>PNG/BMP</strong>
+        <span>lossless image support</span>
+      </div>
+      <div>
+        <strong>AES-GCM</strong>
+        <span>password protection</span>
+      </div>
+      <div>
+        <strong>Audit Logs</strong>
+        <span>admin monitoring</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="visual-toolbar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="visual-stage">
+      <div class="cover-preview">
+        <div class="pixel-row"></div>
+        <div class="pixel-row short"></div>
+        <div class="pixel-row"></div>
+        <div class="pixel-lock"></div>
+      </div>
+      <div class="flow-line"></div>
+      <div class="payload-preview">
+        <span>secret.txt</span>
+        <strong>Encrypted payload</strong>
+        <div class="payload-bars">
+          <i></i>
+          <i></i>
+          <i></i>
+        </div>
+      </div>
+    </div>
+    <div class="visual-footer">
+      <span class="status-pill success">Ready to embed</span>
+      <span class="status-pill locked">Protected</span>
+    </div>
+  </div>
+</section>
+
+<section class="feature-strip">
+  <article>
+    <h2>Embed</h2>
+    <p>Upload a cover image, add secret text or a file, and generate a downloadable stego PNG.</p>
+  </article>
+  <article>
+    <h2>Extract</h2>
+    <p>Recover hidden content only when the correct optional stego password is provided.</p>
+  </article>
+  <article>
+    <h2>Monitor</h2>
+    <p>Admins can review activity logs and manage user access from the same interface.</p>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">Recover data</p>
+    <h1>Extract Hidden Data</h1>
+  </div>
+</section>
+
+<section class="panel">
+  <form method="post" action="/extract" enctype="multipart/form-data" class="form-grid">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label>
+      Stego image
+      <input name="stego_file" type="file" accept=".png,.bmp,image/png,image/bmp" required>
+    </label>
+    <label>
+      Stego password
+      <input name="stego_password" type="password" autocomplete="off">
+    </label>
+    <div class="span-two form-actions">
+      <button type="submit">Extract</button>
+      <a class="button secondary" href="/dashboard">Cancel</a>
+    </div>
+  </form>
+</section>
+
+{% if extracted_text %}
+  <section class="panel result-panel">
+    <h2>Extracted Text</h2>
+    <pre>{{ extracted_text }}</pre>
+  </section>
+{% endif %}
+{% endblock %}
+
