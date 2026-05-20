@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId       Int            @id @default(autoincrement()) @map("user_id")
+  username     String         @unique @db.VarChar(100)
+  email        String         @unique @db.VarChar(150)
+  passwordHash String         @map("password_hash") @db.VarChar(255)
+  role         String         @default("user") @db.VarChar(20)
+  status       String         @default("active") @db.VarChar(20)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  stegoFiles   StegoFile[]
+  logs         OperationLog[]
+
+  @@map("users")
+}
+
+model StegoFile {
+  stegoFileId      Int            @id @default(autoincrement()) @map("stego_file_id")
+  userId           Int            @map("user_id")
+  coverFileName    String         @map("cover_file_name") @db.VarChar(255)
+  stegoFileName    String         @map("stego_file_name") @db.VarChar(255)
+  fileType         String         @map("file_type") @db.VarChar(50)
+  fileSize         BigInt         @map("file_size")
+  storagePath      String         @map("storage_path") @db.VarChar(255)
+  sha256           String         @db.VarChar(64)
+  passwordProtected Boolean       @default(false) @map("password_protected")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  owner            User           @relation(fields: [userId], references: [userId])
+  logs             OperationLog[]
+
+  @@index([userId])
+  @@index([sha256])
+  @@map("stego_files")
+}
+
+model OperationLog {
+  logId           Int        @id @default(autoincrement()) @map("log_id")
+  userId          Int?       @map("user_id")
+  stegoFileId     Int?       @map("stego_file_id")
+  operationType   String     @map("operation_type") @db.VarChar(50)
+  operationStatus String     @map("operation_status") @db.VarChar(50)
+  message         String     @db.Text
+  createdAt       DateTime   @default(now()) @map("created_at")
+  user            User?      @relation(fields: [userId], references: [userId])
+  stegoFile       StegoFile? @relation(fields: [stegoFileId], references: [stegoFileId])
+
+  @@index([userId])
+  @@index([stegoFileId])
+  @@map("operation_logs")
+}
+
