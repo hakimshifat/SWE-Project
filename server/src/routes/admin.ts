@@ -16,12 +16,22 @@ adminRouter.patch("/users/:id/status", requireAdmin, async (req, res) => {
   const admin = res.locals.user;
   const userId = Number(req.params.id);
   const status = String(req.body.status ?? "");
+  if (!Number.isInteger(userId) || userId <= 0) {
+    res.status(400).json({ error: "Invalid user id." });
+    return;
+  }
   if (!["active", "inactive", "blocked"].includes(status)) {
     res.status(400).json({ error: "Invalid account status." });
     return;
   }
   if (admin.userId === userId && status !== "active") {
     res.status(400).json({ error: "You cannot disable your own admin account." });
+    return;
+  }
+
+  const existing = await prisma.user.findUnique({ where: { userId } });
+  if (!existing) {
+    res.status(404).json({ error: "User was not found." });
     return;
   }
 
@@ -48,4 +58,3 @@ adminRouter.get("/logs", requireAdmin, async (_req, res) => {
   });
   res.json({ logs: logs.map(serializeLog) });
 });
-

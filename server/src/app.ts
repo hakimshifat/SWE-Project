@@ -1,6 +1,8 @@
 import connectPgSimple from "connect-pg-simple";
 import express from "express";
+import type { NextFunction, Request, Response } from "express";
 import session from "express-session";
+import multer from "multer";
 import path from "node:path";
 import pg from "pg";
 
@@ -16,6 +18,11 @@ export async function createApp() {
   const app = express();
   const PgSession = connectPgSimple(session);
   const pgPool = new pg.Pool({ connectionString: config.databaseUrl });
+  const isProduction = config.nodeEnv === "production";
+
+  if (isProduction) {
+    app.set("trust proxy", 1);
+  }
 
   app.use(express.json({ limit: "1mb" }));
   app.use(
@@ -30,7 +37,7 @@ export async function createApp() {
       cookie: {
         httpOnly: true,
         sameSite: "lax",
-        secure: false,
+        secure: isProduction,
         maxAge: 1000 * 60 * 60 * 8
       }
     })
@@ -50,6 +57,26 @@ export async function createApp() {
     });
   }
 
+  app.use(apiErrorHandler);
+
   return app;
 }
 
+function apiErrorHandler(error: unknown, _req: Request, res: Response, _next: NextFunction) {
+  if (res.headersSent) {
+    return;
+  }
+
+  if (error instanceof multer.MulterError) {
+    const message = error.code === "LIMIT_FILE_SIZE" ? "Uploaded file is too large." : "Invalid file upload.";
+    res.status(400).json({ error: message });
+    return;
+  }
+
+  if (error instanceof SyntaxError) {
+    res.status(400).json({ error: "Request body is not valid JSON." });
+    return;
+  }
+
+  res.status(500).json({ error: "Internal server error." });
+}

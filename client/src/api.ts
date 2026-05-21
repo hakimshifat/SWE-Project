@@ -32,7 +32,7 @@ export const api = {
       body: JSON.stringify(data)
     }),
   logout: () => request<{ ok: true }>("/api/auth/logout", { method: "POST" }),
-  dashboard: () => request<{ files: StegoFileSummary[]; recentLogs: OperationLogSummary[] }>("/api/dashboard"),
+  dashboard: () => request<{ files: StegoFileSummary[] }>("/api/dashboard"),
   embed: (formData: FormData) =>
     request<{ file: StegoFileSummary }>("/api/stego/embed", {
       method: "POST",

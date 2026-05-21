@@ -65,6 +65,11 @@ describeIfDb("api integration", () => {
       .send({ username: "bob", email: "bob@example.com", password: "password123", confirmPassword: "password123" })
       .expect(201);
     await userAgent.get("/api/admin/users").expect(403);
+    await userAgent.get("/api/admin/logs").expect(403);
+
+    const dashboard = await userAgent.get("/api/dashboard").expect(200);
+    expect(dashboard.body.files).toEqual([]);
+    expect(dashboard.body.recentLogs).toBeUndefined();
 
     await prisma.user.create({
       data: {
@@ -77,10 +82,15 @@ describeIfDb("api integration", () => {
     });
 
     const adminAgent = request.agent(app);
+    await request(app).get("/api/admin/logs").expect(401);
     await adminAgent.post("/api/auth/login").send({ username: "admin", password: "password123" }).expect(200);
     const users = await adminAgent.get("/api/admin/users").expect(200);
     const bob = users.body.users.find((user: { username: string }) => user.username === "bob");
+    await adminAgent.patch("/api/admin/users/not-a-number/status").send({ status: "blocked" }).expect(400);
+    await adminAgent.patch("/api/admin/users/999999/status").send({ status: "blocked" }).expect(404);
     await adminAgent.patch(`/api/admin/users/${bob.userId}/status`).send({ status: "blocked" }).expect(200);
+    const logs = await adminAgent.get("/api/admin/logs").expect(200);
+    expect(Array.isArray(logs.body.logs)).toBe(true);
 
     await userAgent.post("/api/auth/login").send({ username: "bob", password: "password123" }).expect(403);
   });

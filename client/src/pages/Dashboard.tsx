@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import type { OperationLogSummary, StegoFileSummary } from "../../../shared/src/types";
+import type { StegoFileSummary } from "../../../shared/src/types";
 import { api } from "../api";
-import { StatusPill } from "../components/StatusPill";
 
 export function Dashboard() {
   const [files, setFiles] = useState<StegoFileSummary[]>([]);
-  const [recentLogs, setRecentLogs] = useState<OperationLogSummary[]>([]);
 
   useEffect(() => {
     api.dashboard().then((data) => {
       setFiles(data.files);
-      setRecentLogs(data.recentLogs);
     });
   }, []);
 
@@ -40,12 +37,12 @@ export function Dashboard() {
           ) : <p className="empty">No generated stego files yet.</p>}
         </aside>
         <div className="panel activity-panel">
-          <h2>Recent Activity</h2>
-          {recentLogs.length ? (
-            <ul className="activity-list">{recentLogs.map((log) => (
-              <li key={log.logId}><strong>{log.operationType}</strong><StatusPill>{log.operationStatus}</StatusPill><p>{log.message}</p></li>
-            ))}</ul>
-          ) : <p className="empty">No activity recorded.</p>}
+          <h2>Workspace Summary</h2>
+          <p className="empty">
+            {files.length
+              ? `${files.length} stego file${files.length === 1 ? "" : "s"} available in your workspace.`
+              : "No generated stego files yet."}
+          </p>
         </div>
       </section>
     </>
